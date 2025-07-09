@@ -1,7 +1,7 @@
 components:
   schemas:
-    Building:
-      description: Information on a given Building
+    ParkingSpot:
+      description: A parking spot is an area well delimited where one vehicle can be parked.
       type: object
       properties:
         address:
@@ -58,74 +58,15 @@ components:
             model: https://schema.org/address
             type: Property
         category:
-          description: 'Category of the building. Enum:''apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower'''
+          description: 'Category(ies) of the parking spot. `onStreet` : The parking spot belongs to an onStreet parking site. `offStreet` : The parking spot belongs to an offStreet parking site'
           items:
             enum:
-              - apartments
-              - bakehouse
-              - barn
-              - bridge
-              - bungalow
-              - bunker
-              - cathedral
-              - cabin
-              - carport
-              - cemetery
-              - chapel
-              - church
-              - civic
-              - commercial
-              - conservatory
-              - construction
-              - cowshed
-              - detached
-              - digester
-              - dormitory
-              - farm
-              - farm_auxiliary
-              - garage
-              - garages
-              - garbage_shed
-              - grandstand
-              - greenhouse
-              - hangar
-              - hospital
-              - hotel
-              - house
-              - houseboat
-              - hut
-              - industrial
-              - kindergarten
-              - kiosk
-              - mosque
-              - office
-              - parking
-              - pavilion
-              - public
-              - residential
-              - retail
-              - riding_hall
-              - roof
-              - ruins
-              - school
-              - service
-              - shed
-              - shrine
-              - stable
-              - stadium
-              - static_caravan
-              - sty
-              - synagogue
-              - temple
-              - terrace
-              - train_station
-              - transformer_tower
-              - transportation
-              - university
-              - warehouse
-              - water_tower
+              - onStreet
+              - offStreet
             type: string
+          minItems: 1
           type: array
+          uniqueItems: true
           x-ngsi:
             type: Property
         dateCreated:
@@ -327,7 +268,50 @@ components:
                 type: GeoProperty
           x-ngsi:
             type: GeoProperty
-        mapUrl:
+        owner:
+          description: A List containing a JSON encoded sequence of characters referencing the unique Ids of the owner(s)
+          items:
+            anyOf:
+              - description: Identifier format of any NGSI entity
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+                type: string
+                x-ngsi:
+                  type: Property
+              - description: Identifier format of any NGSI entity
+                format: uri
+                type: string
+                x-ngsi:
+                  type: Property
+            description: Unique identifier of the entity
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            type: Property
+        refDevice:
+          description: The device representing the physical sensor used to monitor this parking spot
+          items:
+            anyOf:
+              - description: Identifier format of any NGSI entity
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+                type: string
+                x-ngsi:
+                  type: Property
+              - description: Identifier format of any NGSI entity
+                format: uri
+                type: string
+                x-ngsi:
+                  type: Property
+          minItems: 1
+          type: array
+          uniqueItems: true
+          x-ngsi:
+            type: Relationship
+        refParkingGroup:
           anyOf:
             - description: Identifier format of any NGSI entity
               maxLength: 256
@@ -341,31 +325,46 @@ components:
               type: string
               x-ngsi:
                 type: Property
-          description: Reference to the map containing the building
+          description: Group to which the parking spot belongs to. For model simplification purposes only one group is allowed per parking spot
           x-ngsi:
             type: Relationship
-        name:
-          description: The name of this item
+        status:
+          description: 'Status of the parking spot from the point of view of occupancy. Enum:''closed, free, occupied, unknown'''
+          enum:
+            - closed
+            - free
+            - occupied
+            - unknown
           type: string
           x-ngsi:
+            model: https://schema.org/Text
+            type: Property
+        timeInstant:
+          description: 'Timestamp of the payload . There can be production environments where the attribute type is equal to the `ISO8601` string. If so, it must be considered as a synonym of `DateTime`. This attribute is kept for backwards compatibility with old FIWARE reference implementations'
+          format: date-time
+          type: string
+          x-ngsi:
+            model: https://schema.org/Datetime
             type: Property
         type:
-          description: NGSI Entity type
+          description: NGSI Entity type. It has to be ParkingSpot
           enum:
-            - Building
+            - ParkingSpot
           type: string
           x-ngsi:
             type: Property
       required:
-        - type
         - id
+        - location
+        - type
+        - status
         - category
-        - address
+        - refParkingGroup
 
 
 info: 
   description: "Base Model Definitions from Smart Data Models"
-  title: Building Data Model
+  title: Parking Spot Data Model
   version: "1.0.0"
 openapi: "3.0.0"
 

@@ -1,8 +1,7 @@
 components:
   schemas:
-    Building:
-      description: Information on a given Building
-      type: object
+    Tottem:
+      description: 'An apparatus (hardware + software + firmware) intended to accomplish a particular task (sensing the environment, actuating, etc.).'
       properties:
         address:
           description: The mailing address
@@ -57,76 +56,60 @@ components:
           x-ngsi:
             model: https://schema.org/address
             type: Property
+        areaServed:
+          description: The geographic area where a service or offered item is provided
+          type: string
+          x-ngsi:
+            model: https://schema.org/Text
+            type: Property
         category:
-          description: 'Category of the building. Enum:''apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower'''
+          description: "Sensor: A device that detects and responds to events or changes in the physical environment such as light, motion, or temperature changes. https://w3id.org/saref#Sensor. actuator : A device responsible for moving or controlling a mechanism or system. https://w3id.org/saref#Actuator. Meter : A device built to accurately detect and display a quantity in a form readable by a human being. Partially defined by SAREF. HVAC : Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort. https://w3id.org/saref#HVAC. Network : A device used to connect other devices in a network, such as hub, switch or router in a LAN or Sensor network. (https://w3id.org/saref#Network. Multimedia : A device designed to display, store, record or play multimedia content such as audio, images, animation, video. Enum:'actuator, beacon, endgun, HVAC, implement, irrSection, irrSystem, meter, multimedia, network, sensor'. Raw category will be deprecated use deviceCategory instead to avoid conflict with other aqttributes named category"
           items:
+            description: Every type of device that can be included in the array
             enum:
-              - apartments
-              - bakehouse
-              - barn
-              - bridge
-              - bungalow
-              - bunker
-              - cathedral
-              - cabin
-              - carport
-              - cemetery
-              - chapel
-              - church
-              - civic
-              - commercial
-              - conservatory
-              - construction
-              - cowshed
-              - detached
-              - digester
-              - dormitory
-              - farm
-              - farm_auxiliary
-              - garage
-              - garages
-              - garbage_shed
-              - grandstand
-              - greenhouse
-              - hangar
-              - hospital
-              - hotel
-              - house
-              - houseboat
-              - hut
-              - industrial
-              - kindergarten
-              - kiosk
-              - mosque
-              - office
-              - parking
-              - pavilion
-              - public
-              - residential
-              - retail
-              - riding_hall
-              - roof
-              - ruins
-              - school
-              - service
-              - shed
-              - shrine
-              - stable
-              - stadium
-              - static_caravan
-              - sty
-              - synagogue
-              - temple
-              - terrace
-              - train_station
-              - transformer_tower
-              - transportation
-              - university
-              - warehouse
-              - water_tower
+              - multimedia
             type: string
+            x-ngsi:
+              type: Property
           type: array
           x-ngsi:
+            model: https://schema.org/Text
+            type: Property
+        controlledAsset:
+          description: 'List of the asset(s) (building, object, etc.) controlled by the device'
+          items:
+            anyOf:
+              - description: Identifier format of any NGSI entity
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+                type: string
+                x-ngsi:
+                  type: Property
+              - description: Identifier format of any NGSI entity
+                format: uri
+                type: string
+                x-ngsi:
+                  type: Property
+            description: Unique identifier of the entity
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            model: https://schema.org/Text
+            type: Property
+        controlledProperty:
+          description: 'Anything that can be sensed, measured or controlled by. Enum:''airPollution, atmosphericPressure, averageVelocity, batteryLife, batterySupply, cdom, conductance, conductivity, depth, eatingActivity, electricityConsumption, energy, fillingLevel, freeChlorine, gasConsumption, gateOpening, heading, humidity, light, location, milking, motion, movementActivity, noiseLevel, occupancy, orp, pH, power, precipitation, pressure, refractiveIndex, salinity, smoke, soilMoisture, solarRadiation, speed, tds, temperature, trafficFlow, tss, turbidity, waterConsumption, waterFlow, waterLevel, waterPollution, weatherConditions, weight, windDirection, windSpeed'''
+          items:
+            description: Every possible property controlled by the device
+            enum:
+              - occupancy
+            type: string
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            model: https://schema.org/Text
             type: Property
         dateCreated:
           description: Entity creation timestamp. This will usually be allocated by the storage platform
@@ -144,6 +127,25 @@ components:
           description: A description of this item
           type: string
           x-ngsi:
+            type: Property
+        deviceCategory:
+          description: "Sensor: A device that detects and responds to events or changes in the physical environment such as light, motion, or temperature changes. https://w3id.org/saref#Sensor. actuator : A device responsible for moving or controlling a mechanism or system. https://w3id.org/saref#Actuator. Meter : A device built to accurately detect and display a quantity in a form readable by a human being. Partially defined by SAREF. HVAC : Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort. https://w3id.org/saref#HVAC. Network : A device used to connect other devices in a network, such as hub, switch or router in a LAN or Sensor network. (https://w3id.org/saref#Network. Multimedia : A device designed to display, store, record or play multimedia content such as audio, images, animation, video. Enum:'actuator, beacon, endgun, HVAC, implement, irrSection, irrSystem, meter, multimedia, network, sensor'. Raw category will be deprecated use deviceCategory instead to avoid conflict with other aqttributes named category"
+          items:
+            description: Every type of device that can be included in the array
+            enum:
+              - multimedia
+            type: string
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            model: https://schema.org/Text
+            type: Property
+        deviceState:
+          description: State of this device from an operational point of view. Its value can be vendor dependent
+          type: string
+          x-ngsi:
+            model: https://schema.org/Text
             type: Property
         id:
           anyOf:
@@ -327,7 +329,29 @@ components:
                 type: GeoProperty
           x-ngsi:
             type: GeoProperty
-        mapUrl:
+        owner:
+          description: A List containing a JSON encoded sequence of characters referencing the unique Ids of the owner(s)
+          items:
+            anyOf:
+              - description: Identifier format of any NGSI entity
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+                type: string
+                x-ngsi:
+                  type: Property
+              - description: Identifier format of any NGSI entity
+                format: uri
+                type: string
+                x-ngsi:
+                  type: Property
+            description: Unique identifier of the entity
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            type: Property
+        refDeviceModel:
           anyOf:
             - description: Identifier format of any NGSI entity
               maxLength: 256
@@ -341,31 +365,37 @@ components:
               type: string
               x-ngsi:
                 type: Property
-          description: Reference to the map containing the building
+          description: Model of the device
           x-ngsi:
             type: Relationship
-        name:
-          description: The name of this item
+        type:
+          description: NGSI Entity type. It has to be Device
+          enum:
+            - Device
           type: string
           x-ngsi:
             type: Property
-        type:
-          description: NGSI Entity type
-          enum:
-            - Building
+        value:
+          description: 'A observed or reported value. For actuator devices, it is an attribute that allows a controlling application to change the actuation setting. For instance, a switch device which is currently _on_ can report a value ''on'' of type ''Text''. Obviously, in order to toggle the referred switch, this attribute value will have to be changed to ''off'''
           type: string
           x-ngsi:
+            model: https://schema.org/QuantitativeValue
             type: Property
       required:
-        - type
         - id
-        - category
-        - address
-
+        - type
+        - controlledProperty
+      type: object
+      x-derived-from: ""
+      x-disclaimer: 'Redistribution and use in source and binary forms, with or without modification, are permitted  provided that the license conditions are met. Copyleft (c) 2024 Contributors to Smart Data Models Program'
+      x-license-url: https://github.com/smart-data-models/dataModel.Device/blob/master/Device/LICENSE.md
+      x-model-schema: https://smart-data-models.github.io/dataModel.Device/Device/schema.json
+      x-model-tags: ""
+      x-version: 0.0.9
 
 info: 
   description: "Base Model Definitions from Smart Data Models"
-  title: Building Data Model
+  title: Tottem Data Model
   version: "1.0.0"
 openapi: "3.0.0"
 

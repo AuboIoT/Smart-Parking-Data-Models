@@ -1,7 +1,7 @@
 components:
   schemas:
-    Building:
-      description: Information on a given Building
+    OffStreetParking:
+      description: Off street parking
       type: object
       properties:
         address:
@@ -57,75 +57,50 @@ components:
           x-ngsi:
             model: https://schema.org/address
             type: Property
+        availableSpotNumber:
+          description: 'The number of spots available (_including_ all  vehicle types or reserved spaces, such as those for disabled people, long term parkers and so on). This might be harder to estimate at those parking locations on which spots borders are not clearly marked by lines. Allowed values: A positive integer number, including 0. It must lower or equal than `totalSpotNumber`'
+          minimum: 0
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
         category:
-          description: 'Category of the building. Enum:''apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower'''
+          description: 'Parking site''s category(ies). The purpose of this field is to allow to tag, generally speaking, off street parking entities'
           items:
             enum:
-              - apartments
-              - bakehouse
-              - barn
-              - bridge
-              - bungalow
-              - bunker
-              - cathedral
-              - cabin
-              - carport
-              - cemetery
-              - chapel
-              - church
-              - civic
-              - commercial
-              - conservatory
-              - construction
-              - cowshed
-              - detached
-              - digester
-              - dormitory
-              - farm
-              - farm_auxiliary
-              - garage
-              - garages
-              - garbage_shed
-              - grandstand
-              - greenhouse
-              - hangar
-              - hospital
-              - hotel
-              - house
-              - houseboat
-              - hut
-              - industrial
-              - kindergarten
-              - kiosk
-              - mosque
-              - office
-              - parking
-              - pavilion
+              - barrierAccess
+              - feeCharged
+              - forCustomers
+              - forDisabled
+              - forElectricalCharging
+              - forEmployees
+              - forMembers
+              - forResidents
+              - forStudents
+              - forVisitors
+              - free
+              - freeAccess
+              - gateAccess
+              - guarded
+              - ground
+              - longTerm
+              - mediumTerm
+              - onlyResidents
+              - onlyWithPermit
+              - parkingGarage
+              - parkingLot
+              - private
               - public
-              - residential
-              - retail
-              - riding_hall
-              - roof
-              - ruins
-              - school
-              - service
-              - shed
-              - shrine
-              - stable
-              - stadium
-              - static_caravan
-              - sty
-              - synagogue
-              - temple
-              - terrace
-              - train_station
-              - transformer_tower
-              - transportation
-              - university
-              - warehouse
-              - water_tower
+              - publicPrivate
+              - shortTerm
+              - staffed
+              - underground
+              - urbanDeterrentParking
+              - other
             type: string
+          minItems: 1
           type: array
+          uniqueItems: true
           x-ngsi:
             type: Property
         dateCreated:
@@ -161,6 +136,15 @@ components:
                 type: Property
           description: Unique identifier of the entity
           x-ngsi:
+            type: Property
+        images:
+          description: A URL containing a photo of this parking site
+          items:
+            format: uri
+            type: string
+          type: array
+          x-ngsi:
+            model: https://schema.org/image
             type: Property
         location:
           description: 'Geojson reference to the item. It can be Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon'
@@ -327,45 +311,156 @@ components:
                 type: GeoProperty
           x-ngsi:
             type: GeoProperty
-        mapUrl:
-          anyOf:
-            - description: Identifier format of any NGSI entity
-              maxLength: 256
-              minLength: 1
-              pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
-              type: string
-              x-ngsi:
-                type: Property
-            - description: Identifier format of any NGSI entity
-              format: uri
-              type: string
-              x-ngsi:
-                type: Property
-          description: Reference to the map containing the building
-          x-ngsi:
-            type: Relationship
         name:
           description: The name of this item
           type: string
           x-ngsi:
             type: Property
+        occupancy:
+          description: 'Relative value of occupied spots out of the total spots. Allowed values: 0 - 1'
+          maximum: 1
+          minimum: 0
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
+        occupancyDetectionType:
+          description: 'Occupancy detection method(s).  Allowed values: The following from DATEX II version 2.3 _OccupancyDetectionTypeEnum_. Enum:''balancing, manual, modelBased, none, singleSpaceDetection''. Or any other application-specific'
+          items:
+            enum:
+              - balancing
+              - manual
+              - modelBased
+              - none
+              - singleSpaceDetection
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+          x-ngsi:
+            model: http://schema.org/Text
+            type: Property
+        occupiedSpotNumber:
+          description: Number of total parking spots occupied in the smart parking site corresponding to this observation. This must a positive number lower than or equal to the totalSpotNumber
+          minimum: 0
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
+        owner:
+          description: A List containing a JSON encoded sequence of characters referencing the unique Ids of the owner(s)
+          items:
+            anyOf:
+              - description: Identifier format of any NGSI entity
+                maxLength: 256
+                minLength: 1
+                pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+                type: string
+                x-ngsi:
+                  type: Property
+              - description: Identifier format of any NGSI entity
+                format: uri
+                type: string
+                x-ngsi:
+                  type: Property
+            description: Unique identifier of the entity
+            x-ngsi:
+              type: Property
+          type: array
+          x-ngsi:
+            type: Property
+        parkingMode:
+          description: 'Parking mode(s). Allowed values: Those defined by the DATEX II version 2.3 _ParkingModeEnum_ enumeration. Enum:''echelonParking, parallelParking, perpendicularParking'''
+          items:
+            enum:
+              - echelonParking
+              - parallelParking
+              - perpendicularParking
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+          x-ngsi:
+            model: http://schema.org/Text
+            type: Property
+        refParkingGroup:
+          anyOf:
+            - maxLength: 256
+              minLength: 1
+              pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+              type: string
+            - format: uri
+              type: string
+          description: 'Parking site identified group(s). A group can correspond to a zone, a complete storey, a group of spots, etc'
+          x-ngsi:
+            model: http://schema.org/URL
+            type: Relationship
+        refParkingSpot:
+          anyOf:
+            - maxLength: 256
+              minLength: 1
+              pattern: ^[\w\-\.\{\}\$\+\*\[\]`|~^@!,:\\]+$
+              type: string
+            - format: uri
+              type: string
+          description: Individual parking spots belonging to this offStreet parking site
+          x-ngsi:
+            type: Relationship
+        status:
+          description: 'Status of the parking site. Allowed values: The following defined by the following enumerations defined by DATEX II version 2.3. Enum:''almostFull, closed, closedAbnormal, full, fullAtEntrance, open, openingTimesInForce, spacesAvailable''. Or any other application-specific'
+          items:
+            enum:
+              - almostFull
+              - closed
+              - closedAbnormal
+              - full
+              - fullAtEntrance
+              - open
+              - openingTimesInForce
+              - spacesAvailable
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+          x-ngsi:
+            model: http://schema.org/Text
+            type: Property
+        totalSpotNumber:
+          description: 'The total number of spots offered by this parking site.  This number can be difficult to be obtained for those parking locations on which spots are not clearly marked by lines. Allowed values: Any positive integer number or 0. Normative references: DATEX 2 version 2.3 attribute _parkingNumberOfSpaces_ of the _ParkingRecord_ class'
+          minimum: 1
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
         type:
-          description: NGSI Entity type
+          description: It has to be OffStreetParking
           enum:
-            - Building
+            - OffStreetParking
           type: string
           x-ngsi:
             type: Property
+        vehicleEntranceCount:
+          description: Aggregated number of vehicle that enter the parking site in a period of time
+          minimum: 0
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
+        vehicleExitCount:
+          description: Aggregated number of vehicle that leave the parking site in a period of time
+          minimum: 0
+          type: number
+          x-ngsi:
+            model: http://schema.org/Number
+            type: Property
       required:
-        - type
         - id
-        - category
-        - address
-
+        - type
+        - location
 
 info: 
   description: "Base Model Definitions from Smart Data Models"
-  title: Building Data Model
+  title: OffStreetParking Data Model
   version: "1.0.0"
 openapi: "3.0.0"
 
